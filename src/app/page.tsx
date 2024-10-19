@@ -7,7 +7,7 @@ export default function Home() {
       <Input />
 
       <Button className="primary">
-       Primary
+       Primary 123
       </Button>
       <Button variant="secondary">
        Secondary
