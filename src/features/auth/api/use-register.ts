@@ -12,7 +12,8 @@ export const useRegister = () => {
      Error,
      RequestType
     
-    >({mutationFn: async({json}) => {
+    >({
+        mutationFn: async({json}) => {
        const response = await client.api.auth.register["$post"]({json});
       
        return await response.json();
@@ -21,3 +22,4 @@ export const useRegister = () => {
 
 return mutation
 }
+
