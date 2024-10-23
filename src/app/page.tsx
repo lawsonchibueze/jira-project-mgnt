@@ -4,7 +4,8 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useCurrent } from "@/features/auth/api/use-current";
 import { useLogout } from "@/features/auth/api/use-logout";
-import { Button } from "@/components/ui/button";
+
+import { UserButton } from "@/features/auth/components/user-button";
 
 export default function Home() {
 
@@ -14,7 +15,7 @@ export default function Home() {
  const {mutate} = useLogout()
 
  useEffect (() => {
-  if (!data && isLoading) {
+  if (!data && !isLoading) {
     router.push("/sign-in")
 
   }
@@ -22,10 +23,7 @@ export default function Home() {
 
  return (
   <div>
-    Only visible to authorized users
-    <Button onClick={() => mutate()}>
-      Logout
-    </Button>
+    <UserButton />  
 
   </div>
  )
