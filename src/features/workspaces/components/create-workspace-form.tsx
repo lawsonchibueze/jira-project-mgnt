@@ -23,6 +23,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useCreateWorkspace } from "../api/use-createWorkspace";
 import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 interface CreateWorkspaceFormProps {
   onCancel?: () => void;
@@ -160,6 +161,7 @@ const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                   variant="secondary"
                   onClick={onCancel}
                   disabled={isPending}
+                  className={cn(!onCancel && "invisible")}
                 >
                   Cancel
                 </Button>
