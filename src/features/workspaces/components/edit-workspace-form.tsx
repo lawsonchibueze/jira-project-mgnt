@@ -2,12 +2,12 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { createWorkspaceSchema } from "../schema";
+import { updateWorkspaceSchema } from "../schema";
 import { z } from "zod";
 import Image from "next/image";
 import { useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ImageIcon } from "lucide-react";
+import { ArrowLeft, ImageIcon } from "lucide-react";
 import {
   Form,
   FormControl,
@@ -21,56 +21,76 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { DottedSeparator } from "@/components/dotted-separator";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useCreateWorkspace } from "../api/use-createWorkspace";
+
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { workspace } from "../types";
+import { useUpdateWorkspace } from "../api/use-update-workspace";
 
-interface CreateWorkspaceFormProps {
+interface EditWorkspaceFormProps {
   onCancel?: () => void;
+  initialValues: workspace;
 }
 
-export const CreateWorkspaceForm = ({ onCancel }: CreateWorkspaceFormProps) => {
-  const router = useRouter()
-  const { mutate, isPending } = useCreateWorkspace();
+export const EditWorkspaceForm = ({
+  onCancel,
+  initialValues,
+}: EditWorkspaceFormProps) => {
+  const router = useRouter();
+  const { mutate, isPending } = useUpdateWorkspace();
   const inputRef = useRef<HTMLInputElement>(null);
-  const form = useForm<z.infer<typeof createWorkspaceSchema>>({
-    resolver: zodResolver(createWorkspaceSchema),
+  const form = useForm<z.infer<typeof updateWorkspaceSchema>>({
+    resolver: zodResolver(updateWorkspaceSchema),
     defaultValues: {
-      name: "",
+      ...initialValues,
+      image: initialValues.imageUrl ?? "",
     },
   });
 
-  const onSubmit = (values: z.infer<typeof createWorkspaceSchema>) => {
-
+  const onSubmit = (values: z.infer<typeof updateWorkspaceSchema>) => {
     const finalValues = {
       ...values,
       image: values.image instanceof File ? values.image : "",
-    }
-    mutate({ form: finalValues },{
-      onSuccess: ({data}) => {
-        form.reset()
-        router.push(`/workspaces/${data.$id}`)
+    };
+    mutate(
+      {
+        form: finalValues,
+        param: { workspaceId: initialValues.$id },
+      },
+      {
+        onSuccess: ({ data }) => {
+          form.reset();
+          router.push(`/workspaces/${data.$id}`);
+        },
       }
-    });
+    );
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
 
-  
-const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const file = e.target.files?.[0]
-
-  if (file){
-    form.setValue("image", file)
-  }
-}
- 
-
+    if (file) {
+      form.setValue("image", file);
+    }
+  };
 
   return (
     <Card className="w-full h-full border-none shadow-none">
-      <CardHeader className="flex p-7">
+      <CardHeader className="flex flex-row items-center gap-x-4 p-7 space-y-0">
+        <Button
+          className="sm"
+          variant="secondary"
+          onClick={
+            onCancel
+              ? onCancel
+              : () => router.push(`/workspaces/${initialValues.$id}`)
+          }
+        >
+          <ArrowLeft className="size-4 mr-2" />
+          Back
+        </Button>
         <CardTitle className="text-xl font-bold">
-          Create a new workspace
+          {initialValues.name}
         </CardTitle>
       </CardHeader>
       <div className="px-7">
@@ -115,27 +135,24 @@ const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                       ) : (
                         <Avatar className="size-[72px">
                           <AvatarFallback>
-                          <ImageIcon className="size-[36px] text-neutral-400" />
-
+                            <ImageIcon className="size-[36px] text-neutral-400" />
                           </AvatarFallback>
-                          
                         </Avatar>
                       )}
                       <div className="flex flex-col">
-                        <p className="text-sm ">
-                          Workspace Icon
-                        </p>
+                        <p className="text-sm ">Workspace Icon</p>
                         <p className="text-sm text-muted-foreground">
                           JPG,PNG,SVG,or JPEG, max 1MB
                         </p>
-                        <input className="hidden" 
-                        type="file"
-                        accept="jpg, .png, .jpeg, .svg" 
-                        ref={inputRef}
-                        onChange={handleImageChange}
-                        disabled= {isPending}
+                        <input
+                          className="hidden"
+                          type="file"
+                          accept="jpg, .png, .jpeg, .svg"
+                          ref={inputRef}
+                          onChange={handleImageChange}
+                          disabled={isPending}
                         />
-                        {  field.value ? (
+                      {  field.value ? (
                         <Button
                         type="button"
                         disabled={isPending}
@@ -165,10 +182,8 @@ const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                         >
                           Upload Image
 
-                        </Button>
-
-                        )}
-
+                        </Button>)
+                          }
                       </div>
                     </div>
                   </div>
@@ -192,7 +207,7 @@ const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
                   variant="primary"
                   disabled={isPending}
                 >
-                  Create Workspace
+                  Save Changes
                 </Button>
               </div>
             </div>
