@@ -15,7 +15,9 @@ export const useCreateWorkspace = () => {
     const mutation = useMutation<
      ResponseType,
      Error,
-     RequestType
+    //  RequestType
+
+    { form: RequestType } // Ensure json property is defined here
     
     >({mutationFn: async({form}) => {
        const response = await client.api.workspaces["$post"]({form});

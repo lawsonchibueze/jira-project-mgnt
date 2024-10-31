@@ -15,7 +15,9 @@ export const useRegister = () => {
     const mutation = useMutation<
      Responsetype,
      Error,
-     RequestType
+
+    //  RequestType
+    { json: RequestType } // Ensure json property is defined here
     
     >({
         mutationFn: async({json}) => {

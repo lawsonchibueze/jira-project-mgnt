@@ -10,32 +10,65 @@ type Responsetype = InferResponseType<typeof client.api.auth.login["$post"]>
 type RequestType = InferRequestType<typeof client.api.auth.login["$post"]>
 
 export const useLogin = () => {
-    const queryClient = useQueryClient()
-    const router = useRouter()
-    const mutation = useMutation<
-     Responsetype,
-     Error,
-     RequestType
+    const queryClient = useQueryClient();
+    const router = useRouter();
     
-    >({mutationFn: async({json}) => {
-       const response = await client.api.auth.login["$post"]({json});
+    const mutation = useMutation<
+        Responsetype,
+        Error,
+        { json: RequestType } // Ensure json property is defined here
+    >({
+        mutationFn: async ({ json }) => { // destructure the json property
+            const response = await client.api.auth.login["$post"]({ json });
+            
+            if (!response.ok) {
+                throw new Error("Failed to login");
+            }
+            
+            return await response.json();
+        },
 
-       if(!response.ok){
-        throw new Error("Failed to login")
-       }
-       return await response.json();
-    },
-
-    onSuccess: () => {
-        toast.success("Logged in")
+        onSuccess: () => {
+            toast.success("Logged in");
+            router.refresh();
+            queryClient.invalidateQueries({ queryKey: ["current"] });
+        },
         
-        router.refresh()
-        queryClient.invalidateQueries({queryKey:["current"]})
-    },
-    onError: () => {
-        toast.error("Failed to log in")
-    }
-});
+        onError: () => {
+            toast.error("Failed to log in");
+        }
+    });
 
-return mutation
-}
+    return mutation;
+};
+
+// export const useLogin = () => {
+//     const queryClient = useQueryClient()
+//     const router = useRouter()
+//     const mutation = useMutation<
+//      Responsetype,
+//      Error,
+//      RequestType
+    
+//     >({mutationFn: async({json}) => {
+//        const response = await client.api.auth.login["$post"]({json});
+
+//        if(!response.ok){
+//         throw new Error("Failed to login")
+//        }
+//        return await response.json();
+//     },
+
+//     onSuccess: () => {
+//         toast.success("Logged in")
+        
+//         router.refresh()
+//         queryClient.invalidateQueries({queryKey:["current"]})
+//     },
+//     onError: () => {
+//         toast.error("Failed to log in")
+//     }
+// });
+
+// return mutation
+// }
