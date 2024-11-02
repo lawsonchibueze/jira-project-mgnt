@@ -20,8 +20,7 @@ export const updateWorkspaceSchema = z.object({
 
     
     ])
-    // I added this
-    // param:z.string()
+  
     .optional(),
   
 

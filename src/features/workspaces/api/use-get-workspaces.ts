@@ -11,7 +11,7 @@ export const useGetWorkspaces = () => {
 
 
             if(!response.ok){
-            new Error ("Failed to fetch workspaces")
+            throw new Error ("Failed to fetch workspaces")
             }
 
           

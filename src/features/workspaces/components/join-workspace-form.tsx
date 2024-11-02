@@ -23,6 +23,9 @@ interface JoinWorkspaceFormProps {
     }
 }
 
+
+
+
 const JoinWorkspaceForm = ({initialValues}:JoinWorkspaceFormProps) => {
     const inviteCode = useInviteCode()
     const router = useRouter()
@@ -31,18 +34,19 @@ const JoinWorkspaceForm = ({initialValues}:JoinWorkspaceFormProps) => {
     const workspaceId = useWorkspaceId()
 
     const onSubmit = () => {
-        mutate({
-            param: {workspaceId},
-           
-        }, {
-            onSuccess:({data}) => {
-                router.push(`/workspace/${data.$id}`)
-
+        mutate(
+            {
+                param: { workspaceId },
+                json: { code: inviteCode },
+            },
+            {
+                onSuccess: ({ data }) => {
+                    router.push(`/workspaces/${data.$id}`);
+                },
             }
-        })
-      
-    }
-
+        );
+    };
+    
 
   return (
     <Card className="w-full h-full border-none shadow-none">

@@ -22,6 +22,7 @@ export const useUpdateWorkspace = () => {
   
     
     >({mutationFn: async({form, param}) => {
+        // const response = await client.api.workspaces[":workspaceId"]["$patch"]({ form , param});
        const response = await client.api.workspaces[":workspaceId"]["$patch"]({ param});
        if(!response.ok){
         throw new Error("Failed to update workspace")

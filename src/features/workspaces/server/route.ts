@@ -2,6 +2,7 @@ import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { createWorkspaceSchema, updateWorkspaceSchema } from "../schema";
 import { sessionMiddleware } from "@/lib/session-middleware";
+
 import {
   DATABASE_ID,
   IMAGES_BUCKET_ID,
@@ -13,8 +14,8 @@ import { MemberRole } from "@/features/members/types";
 import { generateInviteCode } from "@/lib/utils";
 import { getMember } from "@/features/members/utils";
 import { z } from "zod";
-import { error } from "console";
-import { workspace } from "../types";
+
+import { Workspace } from "../types";
 
 const app = new Hono()
 
@@ -198,7 +199,7 @@ const app = new Hono()
         return c.json({error: "unauthorized"}, 401)
       }
 
-      // TODO: Delete members,projects and tasks
+   
 
       const workspace = await databases.updateDocument(
         DATABASE_ID,
@@ -235,7 +236,7 @@ const app = new Hono()
          
         }
 
-        const workspace = await databases.getDocument<workspace>(
+        const workspace = await databases.getDocument<Workspace>(
           DATABASE_ID,
           WORKSPACES_ID,
           workspaceId
